@@ -13,21 +13,14 @@
       "Bash(git push --force:*)",
       "Bash(git commit --no-verify:*)",
       "Read(.env*)",
+      "Bash(cat .env*)",
+      "Bash(head .env*)",
+      "Bash(more .env*)",
+      "Bash(type .env*)",
       "Bash(rm -rf:*)"
     ]
   },
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if echo \"$CLAUDE_FILE_PATHS\" | grep -qE '\\.(ts|tsx)$'; then npm test --silent -- --run --reporter=dot 2>&1 | tail -5; fi"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
