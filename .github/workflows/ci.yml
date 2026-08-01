@@ -11,7 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Vérifier la présence d'un projet npm
+        id: check
+        run: |
+          if [ -f package-lock.json ]; then echo "ready=true" >> $GITHUB_OUTPUT
+          else echo "ready=false" >> $GITHUB_OUTPUT; echo "⏭️ Pas encore de projet npm — CI en attente."; fi
+
       - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
         with:
           node-version: 22
           cache: npm
