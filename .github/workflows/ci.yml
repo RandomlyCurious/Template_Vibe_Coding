@@ -9,7 +9,11 @@ jobs:
   quality-gates:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 — les gates anti-triche et le scan de secrets comparent
+      # la branche à origin/main ; un clone superficiel n'a pas cette référence.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -25,11 +29,46 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # .only n'est pas listé : Playwright le refuse déjà en CI (forbidOnly).
       - name: Anti-triche — aucun test désactivé
         run: |
-          if grep -rnE '\.(skip|todo|only)\(' --include='*.ts' --include='*.tsx' tests/ e2e/ src/; then
-            echo "❌ test désactivé détecté (.skip/.todo/.only) dans tests/, e2e/ ou src/."
+          if grep -rnE '(\.(skip|todo|fails|fixme|skipIf)\(|\b(xit|xdescribe)\()' --include='*.ts' --include='*.tsx' tests/ e2e/ src/; then
+            echo "❌ test désactivé détecté (.skip/.todo/.fails/.fixme/.skipIf/xit/xdescribe)"
+            echo "   dans tests/, e2e/ ou src/."
             echo "   Un test qui gêne se corrige ou se supprime avec la spec, il ne se désactive pas."
+            exit 1
+          fi
+
+      # Interdit n°1 du projet (CLAUDE.md) : on ne réécrit pas un test pour le
+      # faire passer. Un test existant ne bouge que si la spec a changé — et ce
+      # changement s'assume dans un commit `test:` dédié.
+      - name: Anti-triche — tests existants non modifiables
+        run: |
+          touched=$(git diff --diff-filter=MD --name-only origin/main..HEAD -- tests/ e2e/)
+          if [ -n "$touched" ]; then
+            if git log --format=%s origin/main..HEAD | grep -qE '^test(\(.+\))?: '; then
+              echo "→ tests modifiés, assumés par un commit test: — OK"
+            else
+              echo "❌ des tests existants sont modifiés ou supprimés :"
+              echo "$touched" | sed 's/^/     /'
+              echo "   Aucun commit de type 'test:' dans cette PR ne l'assume."
+              echo "   Modifier un test pour le faire passer est interdit (CLAUDE.md)."
+              echo "   Si la spec a réellement changé : isole le changement dans un"
+              echo "   commit 'test: <ticket>' et référence la spec mise à jour."
+              exit 1
+            fi
+          fi
+
+      # Même scan que .githooks/pre-commit, rejoué ici parce que le hook local
+      # est contournable (--no-verify) et absent d'un clone qui n'a pas fait
+      # `npm ci`. Les crochets (ROL[E], live[_], ey[J]…) empêchent la ligne de
+      # se détecter elle-même — voir le commentaire du hook. NE PAS les retirer.
+      - name: Scan de secrets (lignes ajoutées depuis main)
+        run: |
+          if git diff origin/main..HEAD | grep '^+' | grep -v '^+++' | grep -qiE '(SUPABASE_SERVICE_ROL[E]|sk_live[_]|sk_test[_]|ey[J][A-Za-z0-9_-]{20,}|gh[pous]_|api[_-]?key\s*=\s*["'"'"'][A-Za-z0-9]{20,})'; then
+            echo "❌ secret potentiel détecté dans le diff de la branche."
+            echo "   Rien de sensible ne va en clair dans le dépôt : .env.local en local,"
+            echo "   secrets GitHub Actions en CI."
             exit 1
           fi
 

@@ -1,13 +1,7 @@
 # Template repo — Vibe coding encadré (SDD + TDD)
 
-## Boucle de travail (par feature)
-1. `git switch -c feat/<nom>`
-2. Copier `docs/specs/TEMPLATE.md` → `docs/specs/<nom>.md`, remplir avec l'agent, VALIDER toi-même.
-3. Agent en plan mode : il propose le plan depuis la spec, tu valides.
-4. RED : tests d'abord → commit `test: <nom> (red)`
-5. GREEN : implémentation, tests intouchables → commit `feat: <nom>`
-6. `git push` → PR → CI verte → relecture des fichiers sensibles → merge squash.
-7. Migration BDD ? `supabase db diff -f <nom>` puis test sur `supabase db reset` AVANT push.
+La boucle de travail (spec → ticket → RED → GREEN → refactor → PR) est décrite
+une seule fois, dans [CLAUDE.md § Workflow — TDD STRICT](CLAUDE.md#workflow--tdd-strict-toujours-dans-cet-ordre).
 
 ## Démarrer un nouveau projet depuis ce template
 ```bash
@@ -46,7 +40,9 @@ Playwright · ESLint 9 (flat config). Détails : [docs/architecture.md](docs/arc
 | `npm run test:e2e` | Playwright |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
-| `npm run build` | build de prod |
+| `npm run build` | build de prod (gate CI bloquant) |
+| `supabase start` / `supabase db reset` | BDD locale |
+| `supabase db diff -f <nom>` | générer une migration |
 
 ## Maintenance du template
 Rafraîchir les versions ~tous les 6 mois : `npm outdated`, bump, relancer les 5 gates,

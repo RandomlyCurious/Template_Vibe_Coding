@@ -36,22 +36,10 @@ hors ticket = interdit ; proposer un ticket dédié à la place.
 - Dépendance nouvelle sans la justifier en une phrase dans la PR.
 
 ## Preuves exigées
-Ne jamais affirmer "ça marche". Toujours montrer :
-- la sortie complète de `npm test`
-- la sortie de `npm run typecheck` et `npm run lint`
-- pour une migration : la sortie de `supabase db diff` / `supabase db reset` en local
+Ne jamais affirmer "ça marche" sans montrer la sortie de `npm test`.
 
 ## Commandes du projet
-- `npm run dev` — dev server
-- `npm test` — Vitest (mode run, pas watch)
-- `npm run test:e2e` — Playwright
-- `npm run typecheck` — tsc --noEmit
-- `npm run lint` — ESLint
-- `npm run build` — build de prod (gate CI bloquant)
-- `supabase start` / `supabase db reset` — BDD locale
-- `supabase db diff -f <nom>` — générer une migration
-
-Supabase n'est pas initialisé dans ce template — lancer `supabase init` au premier ticket BDD.
+Liste complète dans le [README](README.md#commandes).
 
 ## Git — règles pour l'agent
 - JAMAIS de commit direct sur main. Toujours vérifier la branche courante
