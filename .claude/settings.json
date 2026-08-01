@@ -13,6 +13,10 @@
       "Bash(git push --force:*)",
       "Bash(git commit --no-verify:*)",
       "Read(.env*)",
+      "Bash(cat .env*)",
+      "Bash(head .env*)",
+      "Bash(more .env*)",
+      "Bash(type .env*)",
       "Bash(rm -rf:*)"
     ]
   },

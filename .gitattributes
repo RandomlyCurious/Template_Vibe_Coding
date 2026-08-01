@@ -1,0 +1,2 @@
+# Les hooks git sont exécutés par /bin/sh : un CRLF casse le shebang sur Linux/macOS.
+.githooks/** text eol=lf

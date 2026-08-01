@@ -19,7 +19,7 @@
 4. **COMMIT** des tests seuls : `test: <ticket> (red)`.
 5. **GREEN** : implémenter le minimum pour passer au vert. INTERDIT de modifier les tests pour les faire passer.
 6. **REFACTOR** : nettoyer, relancer TOUTE la suite (`npm test`), montrer la sortie.
-7. **COMMIT** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`), cocher le ticket dans la spec.
+7. **COMMIT** : Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`, `docs:`), cocher le ticket dans la spec.
 
 ## Anti scope creep
 Tout ce qui n'est pas dans les critères d'acceptation de la spec ne s'implémente PAS,
@@ -47,8 +47,11 @@ Ne jamais affirmer "ça marche". Toujours montrer :
 - `npm run test:e2e` — Playwright
 - `npm run typecheck` — tsc --noEmit
 - `npm run lint` — ESLint
+- `npm run build` — build de prod (gate CI bloquant)
 - `supabase start` / `supabase db reset` — BDD locale
 - `supabase db diff -f <nom>` — générer une migration
+
+Supabase n'est pas initialisé dans ce template — lancer `supabase init` au premier ticket BDD.
 
 ## Git — règles pour l'agent
 - JAMAIS de commit direct sur main. Toujours vérifier la branche courante

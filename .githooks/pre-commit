@@ -1,10 +1,20 @@
 #!/bin/sh
+# Bloque tout commit direct sur main
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" = "main" ]; then
+  echo "❌ commit interdit sur main."
+  echo "   Crée une branche : git switch -c feat/<slug>  (ou fix/ chore/ refactor/)"
+  exit 1
+fi
 # Bloque le commit si tests/typecheck/lint échouent
 echo "→ pre-commit : lint + typecheck + tests"
 npm run lint || { echo "❌ lint KO"; exit 1; }
 npm run typecheck || { echo "❌ typecheck KO"; exit 1; }
-npm test -- --run || { echo "❌ tests KO"; exit 1; }
-# Bloque les secrets évidents
-if git diff --cached | grep -qE '(SUPABASE_SERVICE_ROLE|sk_live_|api[_-]?key\s*=\s*["'"'"'][A-Za-z0-9]{20,})'; then
+npm test -- --run --coverage || { echo "❌ tests KO"; exit 1; }
+# Bloque les secrets évidents, sur les lignes AJOUTÉES uniquement.
+# Les crochets (ROL[E], live[_]) ne sont PAS une coquille : sans eux, cette ligne
+# contient les littéraux qu'elle cherche et le hook se bloque lui-même dès qu'on
+# le modifie. La regex reste strictement équivalente. NE PAS les retirer.
+if git diff --cached | grep '^+' | grep -v '^+++' | grep -qiE '(SUPABASE_SERVICE_ROL[E]|sk_live[_]|api[_-]?key\s*=\s*["'"'"'][A-Za-z0-9]{20,})'; then
   echo "❌ secret potentiel détecté dans le diff"; exit 1
 fi

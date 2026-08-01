@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install
@@ -24,6 +24,14 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      - name: Anti-triche — aucun test désactivé
+        run: |
+          if grep -rnE '\.(skip|todo|only)\(' --include='*.ts' --include='*.tsx' tests/ e2e/ src/; then
+            echo "❌ test désactivé détecté (.skip/.todo/.only) dans tests/, e2e/ ou src/."
+            echo "   Un test qui gêne se corrige ou se supprime avec la spec, il ne se désactive pas."
+            exit 1
+          fi
 
       - name: Tests unitaires + intégration
         run: npm test -- --run --coverage
@@ -48,7 +56,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci

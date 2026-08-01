@@ -20,6 +20,12 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "lcov"],
       include: ["src/**"],
+      // Template : seuil à 0, à monter à 80/80 au premier ticket métier
+      // (voir docs/decisions.md). Ne jamais baisser un seuil déjà atteint.
+      thresholds: {
+        lines: 0,
+        functions: 0,
+      },
     },
   },
 });
