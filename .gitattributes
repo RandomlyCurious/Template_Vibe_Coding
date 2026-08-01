@@ -1,2 +1,4 @@
-# Les hooks git sont exécutés par /bin/sh : un CRLF casse le shebang sur Linux/macOS.
+# Les hooks git et les scripts shell sont exécutés par /bin/sh : un CRLF casse
+# le shebang (et la syntaxe) sur Linux/macOS, donc en CI.
 .githooks/** text eol=lf
+scripts/** text eol=lf

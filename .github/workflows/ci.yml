@@ -59,18 +59,11 @@ jobs:
             fi
           fi
 
-      # Même scan que .githooks/pre-commit, rejoué ici parce que le hook local
+      # Même script que .githooks/pre-commit, rejoué ici parce que le hook local
       # est contournable (--no-verify) et absent d'un clone qui n'a pas fait
-      # `npm ci`. Les crochets (ROL[E], live[_], ey[J]…) empêchent la ligne de
-      # se détecter elle-même — voir le commentaire du hook. NE PAS les retirer.
+      # `npm ci`.
       - name: Scan de secrets (lignes ajoutées depuis main)
-        run: |
-          if git diff origin/main..HEAD | grep '^+' | grep -v '^+++' | grep -qiE '(SUPABASE_SERVICE_ROL[E]|sk_live[_]|sk_test[_]|ey[J][A-Za-z0-9_-]{20,}|gh[pous]_|api[_-]?key\s*=\s*["'"'"'][A-Za-z0-9]{20,})'; then
-            echo "❌ secret potentiel détecté dans le diff de la branche."
-            echo "   Rien de sensible ne va en clair dans le dépôt : .env.local en local,"
-            echo "   secrets GitHub Actions en CI."
-            exit 1
-          fi
+        run: sh scripts/scan-secrets.sh origin/main..HEAD
 
       - name: Tests unitaires + intégration
         run: npm test -- --run --coverage

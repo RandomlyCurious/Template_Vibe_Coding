@@ -13,8 +13,8 @@
 - LOGS : jamais de PII en clair (email, nom, IP) dans console.log, logs serveur ou outils de monitoring. Logger des IDs, pas des identités.
 
 ## Workflow — TDD STRICT (toujours dans cet ordre)
-1. **SPEC** : lire la spec dans `docs/specs/` avant tout code. Si elle n'existe pas, la créer depuis `docs/specs/TEMPLATE.md` et la faire valider par l'humain.
-2. **TICKET** : travailler UN ticket de la spec à la fois, dans l'ordre. Annoncer lequel avant de commencer.
+1. **SPEC** : lire la spec dans `docs/specs/` avant tout code. Si elle n'existe pas, la créer depuis `docs/specs/TEMPLATE.md` et la faire valider par l'humain. La spec porte le CONTRAT (objectif, périmètre, critères d'acceptation), pas l'avancement.
+2. **TICKET** : les tickets vivent dans les GitHub Issues, seule source de l'avancement. Travailler UNE issue à la fois, dans l'ordre. Annoncer laquelle avant de commencer.
 3. **RED** : écrire un test qui échoue décrivant le comportement attendu. Lancer `npm test`, montrer l'échec.
 4. **COMMIT** des tests seuls : `test: <ticket> (red)`.
 5. **GREEN** : implémenter le minimum pour passer au vert. INTERDIT de modifier les tests pour les faire passer.

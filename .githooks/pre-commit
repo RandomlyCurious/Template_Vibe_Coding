@@ -28,12 +28,6 @@ if git diff --cached --name-only | grep -qvE '^(tests|e2e)/'; then
 else
   echo "→ commit de tests seuls (étape RED) : gate tests non lancé."
 fi
-# Bloque les secrets évidents, sur les lignes AJOUTÉES uniquement.
-# Les crochets (ROL[E], live[_], ey[J]…) ne sont PAS une coquille : sans eux,
-# cette ligne contient les littéraux qu'elle cherche et le hook se bloque
-# lui-même dès qu'on le modifie. La regex reste strictement équivalente.
-# NE PAS les retirer. Le même scan tourne en CI (.github/workflows/ci.yml) :
-# toute modification ici doit y être reportée à l'identique.
-if git diff --cached | grep '^+' | grep -v '^+++' | grep -qiE '(SUPABASE_SERVICE_ROL[E]|sk_live[_]|sk_test[_]|ey[J][A-Za-z0-9_-]{20,}|gh[pous]_|api[_-]?key\s*=\s*["'"'"'][A-Za-z0-9]{20,})'; then
-  echo "❌ secret potentiel détecté dans le diff"; exit 1
-fi
+# Bloque les secrets évidents. La regex vit dans scripts/scan-secrets.sh, appelé
+# aussi par la CI : une seule source, pas de dérive entre local et distant.
+sh scripts/scan-secrets.sh --cached || exit 1
