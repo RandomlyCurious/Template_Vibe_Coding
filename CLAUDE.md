@@ -50,6 +50,19 @@ Ne jamais affirmer "ça marche". Toujours montrer :
 - `supabase start` / `supabase db reset` — BDD locale
 - `supabase db diff -f <nom>` — générer une migration
 
+## Git — règles pour l'agent
+- JAMAIS de commit direct sur main. Toujours vérifier la branche courante
+  (git branch --show-current) avant tout commit.
+- Une branche par ticket/feature, nommée : feat/<slug>, fix/<slug>,
+  chore/<slug>, refactor/<slug> (slug court, kebab-case, sans accents).
+- Créer la branche depuis main à jour : git switch main && git pull
+  && git switch -c feat/<slug>
+- Commits atomiques en Conventional Commits, référençant l'issue : (fixes #12).
+- JAMAIS : push --force, --no-verify, rebase de branches déjà poussées,
+  suppression de branche non mergée.
+- Fin de ticket : push + proposer la PR (gh pr create), ne JAMAIS merger
+  soi-même — le merge est une décision humaine après CI verte.
+
 ## Reprise de projet / legacy
 Avant tout refactor d'un code non testé : écrire des **characterization tests**
 qui capturent le comportement ACTUEL (même bugué), les commiter, puis refactorer.
